@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import time
 import os
 import sys
-
+from pathlib import Path
 # Ensure the parent directory is in sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -73,21 +73,21 @@ st.sidebar.markdown("Mode: Academic Prototype")
 # ---------------------------------------------------------
 @st.cache_data
 def get_scenarios():
-    """Load the synthetic temporal sequences for the Digital Twin simulation."""
-    # Try loading from the corrected simulation output first
-    from src.corrected_temporal_simulator import load_and_simulate_corrected
-    # Redirect stdout to avoid messing up streamlit console if we can
+    """Load the deployment temporal sequences for the Digital Twin simulation."""
     try:
-        # Avoid reloading everything if already saved, but we'll use the function since it handles the generation
-        # Since it takes time, we should ideally load the saved npz or run it once.
-        # But for this prototype, we'll run it on the fly if needed, cached by Streamlit.
-        train_data, val_data, test_data, manifest = load_and_simulate_corrected(window_size=TEMPORAL_CONFIG['sequence_length'])
+        deploy_dir = Path(__file__).resolve().parents[1] / 'results' / 'deployment'
         
-        audit_test = pd.read_csv(RESULT_PATHS['sequence_audit'])
-        audit_test = audit_test[audit_test['source_partition'] == 'TEST'].reset_index(drop=True)
+        # Load npz
+        data = np.load(deploy_dir / 'temporal_simulation_data.npz')
+        X_seq_test = data['X_seq_test']
+        y_seq_test = data['y_seq_test']
+        test_data = (X_seq_test, y_seq_test)
+        
+        audit_test = pd.read_csv(deploy_dir / 'audit_test_manifest.csv')
+        
         return test_data, audit_test
     except Exception as e:
-        st.error(f"Error loading scenarios: {e}")
+        st.error(f"Error loading scenarios from deployment artifacts: {e}")
         return None, None
 
 def render_kpi_card(title, value, color="#FFFFFF"):
@@ -97,6 +97,31 @@ def render_kpi_card(title, value, color="#FFFFFF"):
         <div class="kpi-value" style="color: {color};">{value}</div>
     </div>
     """, unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# Deployment Validation
+# ---------------------------------------------------------
+def validate_deployment():
+    deploy_dir = Path(__file__).resolve().parents[1] / 'results' / 'deployment'
+    errors = []
+    if not (deploy_dir / 'temporal_simulation_data.npz').exists():
+        errors.append("Deployment simulation artifact not found.")
+    if not (deploy_dir / 'audit_test_manifest.csv').exists():
+        errors.append("Deployment test manifest not found.")
+    if not os.path.exists(MODEL_PATHS['preprocessor']):
+        errors.append("Preprocessor model not found.")
+    if not os.path.exists(MODEL_PATHS['random_forest']):
+        errors.append("Random Forest model not found.")
+    if not os.path.exists(MODEL_PATHS['temporal_bilstm']):
+        errors.append("Temporal BiLSTM model not found.")
+    
+    if errors:
+        st.error("Deployment validation failed:")
+        for e in errors:
+            st.error(f"- {e}")
+        st.stop()
+
+validate_deployment()
 
 # ---------------------------------------------------------
 # Global State for Dashboard (Default placeholders)
@@ -340,13 +365,16 @@ elif page == "Attack Detection":
         st.info("Select a single flow from the pre-processed validation set.")
         # Load a small snippet of X_val
         try:
-            x_val = pd.read_csv(RESULT_PATHS['flow_model_comparison'].replace('results/tables/final_model_comparison.csv', 'data/processed/X_val.csv'), nrows=100)
-            y_val = pd.read_csv(RESULT_PATHS['flow_model_comparison'].replace('results/tables/final_model_comparison.csv', 'data/processed/y_val.csv'), nrows=100)
+            deploy_dir = Path(__file__).resolve().parents[1] / 'results' / 'deployment'
+            data = np.load(deploy_dir / 'temporal_simulation_data.npz')
             
-            idx = st.slider("Flow Index", 0, 99, 0)
+            x_val = data['X_val_sample']
+            y_val = data['y_val_sample']
+            
+            idx = st.slider("Flow Index", 0, len(x_val)-1, 0)
             if st.button("Detect Flow"):
-                flow = x_val.iloc[idx].values.reshape(1, -1)
-                true_label = int(y_val.iloc[idx].values[0])
+                flow = x_val[idx].reshape(1, -1)
+                true_label = int(y_val[idx])
                 st.write(f"**True Label:** {CLASS_MAP[true_label]}")
                 
                 rf_model = load_random_forest()

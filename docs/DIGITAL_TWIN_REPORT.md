@@ -64,7 +64,7 @@ SHAP (`GradientExplainer`) was utilized on a representative subset of the Test s
 **Simulation Performance:**
 - **Mean Update Latency**: 0.0724 ms
 - **95th Percentile Latency**: 0.1006 ms
-- **Throughput**: Extremely capable of near real-time ingestion in a physical deployment setting.
+- **Throughput**: Capable of high-throughput ingestion suitable for operational deployment settings.
 
 ## 13. Error Analysis
 The isolated sequence-level evaluation produced a fascinating artifact: Specificity of 0.0000 and FPR of 1.0000. 

@@ -25,7 +25,9 @@ def load_preprocessor():
     """Load the fitted RobustScaler preprocessing pipeline."""
     path = MODEL_PATHS['preprocessor']
     if not os.path.exists(path):
-        st.error(f"Preprocessor not found: `{path}`")
+        import logging
+        logging.error(f"Preprocessor not found: `{path}`")
+        st.error("Model loading failed. Please verify that the required model artifacts are present in the repository.")
         return None
     return joblib.load(path)
 
@@ -35,7 +37,9 @@ def load_random_forest():
     """Load the trained Random Forest classifier."""
     path = MODEL_PATHS['random_forest']
     if not os.path.exists(path):
-        st.error(f"Random Forest model not found: `{path}`")
+        import logging
+        logging.error(f"Random Forest model not found: `{path}`")
+        st.error("Model loading failed. Please verify that the required model artifacts are present in the repository.")
         return None
     return joblib.load(path)
 
@@ -45,7 +49,9 @@ def load_logistic_regression():
     """Load the trained Logistic Regression classifier."""
     path = MODEL_PATHS['logistic_regression']
     if not os.path.exists(path):
-        st.error(f"Logistic Regression model not found: `{path}`")
+        import logging
+        logging.error(f"Logistic Regression model not found: `{path}`")
+        st.error("Model loading failed. Please verify that the required model artifacts are present in the repository.")
         return None
     return joblib.load(path)
 
@@ -58,7 +64,9 @@ def load_temporal_bilstm():
     """
     path = MODEL_PATHS['temporal_bilstm']
     if not os.path.exists(path):
-        st.error(f"Temporal BiLSTM checkpoint not found: `{path}`")
+        import logging
+        logging.error(f"Temporal BiLSTM checkpoint not found: `{path}`")
+        st.error("Model loading failed. Please verify that the required model artifacts are present in the repository.")
         return None
 
     device = torch.device('cpu')  # CPU-only on this system
