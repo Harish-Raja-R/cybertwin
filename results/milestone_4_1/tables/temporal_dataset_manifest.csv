@@ -1,0 +1,2 @@
+scenario,window_length,train_sequences,validation_sequences,test_sequences,normal_sequences,attack_sequences,label_definition
+CORRECTED_BALANCED,20,3000,600,600,2100,2100,"Scenario State (Normal=0, Recovery=0, Onset=1, Sustained=1)"

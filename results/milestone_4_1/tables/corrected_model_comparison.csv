@@ -1,0 +1,2 @@
+accuracy,precision,recall,f1,roc_auc,pr_auc,specificity,fpr,fnr,tn,fp,fn,tp
+1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,300,0,0,300

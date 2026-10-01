@@ -1,0 +1,4 @@
+split,num_sequences,sequence_length,changed_sequences,unchanged_sequences,mean_positions_changed
+Train,3000,20,3000,0,19.052666666666667
+Val,600,20,600,0,19.05
+Test,600,20,600,0,19.05

@@ -1,0 +1,3 @@
+Experiment,Sequence Construction,Labeling,Main Result,Interpretation
+Initial M4,Random 20-flow,Any attack,"F1=0.9978, Specificity=0.0",Invalid/biased due to mathematical near-certainty of attack flows.
+Corrected M4.1,Controlled scenarios,Scenario state,Actual Metrics (See corrected_model_comparison.csv),"Primary temporal experiment with balanced, structured scenarios."

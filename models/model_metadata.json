@@ -1,0 +1,8 @@
+{
+  "feature_dimension": 70,
+  "sequence_length": 20,
+  "class_mapping": {"0": "BENIGN", "1": "PortScan"},
+  "architecture": "Temporal BiLSTM",
+  "training_seed": 42,
+  "preprocessing_path": "models/preprocessor.joblib"
+}

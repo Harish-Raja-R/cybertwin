@@ -1,0 +1,1 @@
+{"architecture": "1D-CNN + BiLSTM", "features": 70, "class_mapping": {"0": "BENIGN", "1": "PortScan"}, "preprocessing": "RobustScaler", "best_val_f1": 0.6257265605256508, "seed": 42}
