@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.config import (
+    MODEL_PATHS,
     RESULT_PATHS, 
     FIGURE_PATHS, 
     SCENARIO_COUNTS, 
@@ -78,7 +79,7 @@ def get_scenarios():
         deploy_dir = Path(__file__).resolve().parents[1] / 'results' / 'deployment'
         
         # Load npz
-        data = np.load(deploy_dir / 'temporal_simulation_data.npz')
+        data = np.load(deploy_dir / 'temporal_simulation_data.npz', allow_pickle=True)
         X_seq_test = data['X_seq_test']
         y_seq_test = data['y_seq_test']
         test_data = (X_seq_test, y_seq_test)
@@ -366,10 +367,12 @@ elif page == "Attack Detection":
         # Load a small snippet of X_val
         try:
             deploy_dir = Path(__file__).resolve().parents[1] / 'results' / 'deployment'
-            data = np.load(deploy_dir / 'temporal_simulation_data.npz')
+            data = np.load(deploy_dir / 'temporal_simulation_data.npz', allow_pickle=True)
             
             x_val = data['X_val_sample']
             y_val = data['y_val_sample']
+            if y_val.ndim > 1:
+                y_val = y_val[:, -1]
             
             idx = st.slider("Flow Index", 0, len(x_val)-1, 0)
             if st.button("Detect Flow"):
